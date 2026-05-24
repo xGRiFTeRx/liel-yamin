@@ -17,3 +17,85 @@
 }
 
 /* Section styles are appended below as we build each widget. */
+
+/* ===========================================================
+   Hero Slider  (widget: liel_hero_slider)
+   =========================================================== */
+.liel-hero{
+  position:relative;
+  width:100%;
+  height:var(--liel-hero-h,100vh);
+  overflow:hidden;
+}
+.liel-hero .swiper-wrapper{height:100%;}
+.liel-hero .swiper-slide{position:relative;height:100%;overflow:hidden;}
+
+.liel-hero__bg{
+  position:absolute;inset:0;
+  background-size:cover;
+  background-position:center;
+  will-change:transform;
+}
+.liel-hero__overlay{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,.25);
+  z-index:1;
+}
+.liel-hero__content{
+  position:absolute;inset:0;z-index:2;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;color:#fff;padding:20px;
+}
+.liel-hero__desc{
+  font-family:var(--liel-display);
+  letter-spacing:.12em;
+  font-size:1rem;
+  margin-bottom:14px;
+}
+.liel-hero__btn{
+  display:inline-block;
+  font-family:var(--liel-display);
+  letter-spacing:.25em;
+  text-transform:uppercase;
+  font-size:.72rem;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.85);
+  padding:.6rem 1.7rem;
+  transition:background .3s ease,color .3s ease,border-color .3s ease;
+}
+.liel-hero__btn:hover{background:#fff;color:var(--liel-ink);}
+
+/* arrows */
+.liel-hero__arrow{
+  position:absolute;top:50%;transform:translateY(-50%);
+  z-index:5;cursor:pointer;
+  width:46px;height:46px;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-family:var(--liel-display);font-size:38px;line-height:1;
+  opacity:.85;transition:opacity .3s ease;user-select:none;
+}
+.liel-hero__arrow:hover{opacity:1;}
+.liel-hero__arrow--prev{left:14px;}
+.liel-hero__arrow--next{right:14px;}
+.liel-hero__arrow.swiper-button-disabled{opacity:.3;cursor:default;}
+
+/* pagination */
+.liel-hero .swiper-pagination{
+  position:absolute;bottom:18px;left:0;right:0;
+  text-align:center;z-index:5;
+}
+.liel-hero .swiper-pagination-bullet{
+  width:8px;height:8px;background:#fff;opacity:.5;
+  margin:0 5px !important;transition:opacity .3s ease;
+}
+.liel-hero .swiper-pagination-bullet-active{opacity:1;}
+
+/* Ken Burns zoom on the active slide */
+.liel-hero.is-kenburns .swiper-slide-active .liel-hero__bg{
+  animation:liel-kenburns 8s ease-out forwards;
+}
+@keyframes liel-kenburns{
+  from{transform:scale(1.001);}
+  to{transform:scale(1.14);}
+}

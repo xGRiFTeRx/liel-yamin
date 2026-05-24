@@ -30,8 +30,7 @@ final class Liel_Bridal_Widgets {
 	 * 'file' => class file under /widgets, 'class' => the widget class name.
 	 */
 	private $widgets = array(
-		// Added section by section, e.g.:
-		// array( 'file' => 'class-liel-hero.php', 'class' => 'Liel_Hero_Widget' ),
+		array( 'file' => 'class-liel-hero-slider.php', 'class' => 'Liel_Hero_Slider_Widget' ),
 	);
 
 	public function __construct() {
@@ -52,10 +51,9 @@ final class Liel_Bridal_Widgets {
 		add_action( 'elementor/elements/categories_registered', array( $this, 'register_category' ) );
 		add_action( 'elementor/widgets/register', array( $this, 'register_widgets' ) );
 
-		// Frontend + editor assets.
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+		// Register assets early so widgets can declare them via get_*_depends().
+		add_action( 'wp_enqueue_scripts', array( $this, 'register_assets' ), 5 );
 		add_action( 'elementor/editor/after_enqueue_styles', array( $this, 'enqueue_editor_assets' ) );
-		add_action( 'elementor/frontend/after_enqueue_scripts', array( $this, 'maybe_enqueue_scripts' ) );
 	}
 
 	/**
@@ -86,28 +84,29 @@ final class Liel_Bridal_Widgets {
 		}
 	}
 
-	public function enqueue_assets() {
-		wp_enqueue_style( 'liel-bw', LIEL_BW_URL . 'assets/liel.css', array(), LIEL_BW_VERSION );
+	const FONTS_URL = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Frank+Ruhl+Libre:wght@300;400;500;700&family=Heebo:wght@300;400;500&display=swap';
+	const SWIPER_VERSION = '8.4.7';
 
-		// Brand fonts.
-		wp_enqueue_style(
-			'liel-bw-fonts',
-			'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Frank+Ruhl+Libre:wght@300;400;500;700&family=Heebo:wght@300;400;500&display=swap',
-			array(),
-			null
-		);
+	/**
+	 * Registers all assets. Interactive deps (Swiper, liel.js) are only
+	 * pulled in by widgets that declare them via get_script/style_depends();
+	 * the brand stylesheet + fonts load globally so styling is always present.
+	 */
+	public function register_assets() {
+		wp_register_style( 'swiper-bundle', 'https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css', array(), self::SWIPER_VERSION );
+		wp_register_script( 'swiper-bundle', 'https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js', array(), self::SWIPER_VERSION, true );
+
+		wp_register_style( 'liel-bw', LIEL_BW_URL . 'assets/liel.css', array(), LIEL_BW_VERSION );
+		wp_register_script( 'liel-bw', LIEL_BW_URL . 'assets/liel.js', array( 'jquery', 'swiper-bundle' ), LIEL_BW_VERSION, true );
+
+		wp_enqueue_style( 'liel-bw-fonts', self::FONTS_URL, array(), null );
+		wp_enqueue_style( 'liel-bw' );
 	}
 
 	public function enqueue_editor_assets() {
+		wp_enqueue_style( 'liel-bw-fonts', self::FONTS_URL, array(), null );
+		wp_enqueue_style( 'swiper-bundle', 'https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css', array(), self::SWIPER_VERSION );
 		wp_enqueue_style( 'liel-bw', LIEL_BW_URL . 'assets/liel.css', array(), LIEL_BW_VERSION );
-	}
-
-	/**
-	 * JS is only needed by interactive widgets (carousel etc.).
-	 * It's registered here and enqueued by widgets that need it.
-	 */
-	public function maybe_enqueue_scripts() {
-		wp_register_script( 'liel-bw', LIEL_BW_URL . 'assets/liel.js', array(), LIEL_BW_VERSION, true );
 	}
 
 	public function notice_missing_elementor() {
