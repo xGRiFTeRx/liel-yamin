@@ -1,0 +1,19 @@
+/* ===========================================================
+   Liel Bridal Widgets — shared styles
+   Brand tokens + per-section styles (added section by section)
+   =========================================================== */
+
+:root{
+  --liel-ivory:#faf7f2;
+  --liel-cream:#f1ebe2;
+  --liel-ink:#2b2926;
+  --liel-muted:#8a8074;
+  --liel-line:#e6ddd3;
+  --liel-gold:#b89b6f;
+  --liel-rose:#c9a99a;
+  --liel-serif:'Frank Ruhl Libre', serif;
+  --liel-display:'Cormorant Garamond', serif;
+  --liel-sans:'Heebo', sans-serif;
+}
+
+/* Section styles are appended below as we build each widget. */

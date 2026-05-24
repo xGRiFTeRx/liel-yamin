@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LIEL | מעצבת שמלות כלה</title>
+  <meta name="description" content="ליאל — מעצבת שמלות כלה. קולקציות עונתיות, תפירה אישית ושמלות בעבודת יד." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Frank+Ruhl+Libre:wght@300;400;500;700&family=Heebo:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ===== Utility bar ===== -->
+  <div class="utilbar">
+    <div class="container utilbar__inner">
+      <ul class="utilbar__links">
+        <li><a href="#contact">צור קשר</a></li>
+        <li><a href="#stores">חנויות</a></li>
+        <li><a href="#brides">הכלות שלי</a></li>
+      </ul>
+      <div class="utilbar__note">משלוח חינם בהזמנה מעל ₪350</div>
+    </div>
+  </div>
+
+  <!-- ===== Header / Nav ===== -->
+  <header class="header" id="top">
+    <div class="container header__inner">
+      <button class="nav-toggle" aria-label="פתיחת תפריט" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="nav nav--right" aria-label="ראשי">
+        <a href="#second-look">2ND LOOK</a>
+        <div class="nav__dropdown">
+          <a href="#collections" class="nav__dropdown-trigger">קולקציות ▾</a>
+          <ul class="nav__menu">
+            <li><a href="#collections">Desert Rose F/W 2026</a></li>
+            <li><a href="#collections">Eternity 2025</a></li>
+            <li><a href="#collections">Moonlight 2024</a></li>
+            <li><a href="#collections">Bloom 2023</a></li>
+            <li><a href="#collections">Aurora 2022</a></li>
+          </ul>
+        </div>
+        <a href="#about">אודות</a>
+      </nav>
+
+      <a href="#top" class="logo">
+        <span class="logo__main">LIEL</span>
+        <span class="logo__sub">BRIDAL DESIGN</span>
+      </a>
+
+      <nav class="nav nav--left" aria-label="משני">
+        <a href="#brides">הכלות שלי</a>
+        <a href="#contact">צרו קשר</a>
+        <a href="#" class="nav__icon" aria-label="Instagram">◎</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== Hero ===== -->
+  <section class="hero">
+    <div class="hero__media" style="--img: url('https://picsum.photos/seed/liel-hero/1600/2000')">
+      <div class="hero__overlay">
+        <p class="hero__eyebrow">NEW COLLECTION</p>
+        <h1 class="hero__title">Desert Rose</h1>
+        <p class="hero__season">F / W 2026</p>
+        <a href="#collections" class="btn btn--light">SEE MORE</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Featured collection grid ===== -->
+  <section class="featured" id="second-look">
+    <div class="container">
+      <div class="featured__grid">
+        <a class="card" href="#collections">
+          <div class="card__img" style="--img:url('https://picsum.photos/seed/liel-1/800/1000')"></div>
+          <div class="card__body">
+            <h3>Desert Rose</h3>
+            <span class="card__cta">SEE MORE</span>
+          </div>
+        </a>
+        <a class="card" href="#collections">
+          <div class="card__img" style="--img:url('https://picsum.photos/seed/liel-2/800/1000')"></div>
+          <div class="card__body">
+            <h3>2nd Look</h3>
+            <span class="card__cta">SEE MORE</span>
+          </div>
+        </a>
+        <a class="card" href="#collections">
+          <div class="card__img" style="--img:url('https://picsum.photos/seed/liel-3/800/1000')"></div>
+          <div class="card__body">
+            <h3>Eternity</h3>
+            <span class="card__cta">SEE MORE</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Designer intro ===== -->
+  <section class="intro" id="about">
+    <div class="container intro__inner">
+      <div class="intro__img" style="--img:url('https://picsum.photos/seed/liel-designer/900/1100')"></div>
+      <div class="intro__text">
+        <p class="eyebrow">ABOUT</p>
+        <h2>היי, אני ליאל</h2>
+        <p>
+          מעצבת שמלות כלה ובעלת המותג משנת 2015. בוגרת המחלקה לעיצוב אופנה בשנקר,
+          עם אהבה גדולה לבדים, לפרטים הקטנים ולרגע שבו כל כלה מוצאת את השמלה שלה.
+        </p>
+        <p>
+          כל שמלה נתפרת בעבודת יד באטלייה שלי, בהתאמה אישית מלאה — מהסקיצה הראשונה
+          ועד הפרופייה האחרונה. הסטייל שלי משלב קווים נקיים, נשיות וקלילות,
+          תוך הקפדה על איכות בלתי מתפשרת.
+        </p>
+        <a href="#contact" class="btn btn--dark">לקביעת פגישה</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Collections carousel ===== -->
+  <section class="collections" id="collections">
+    <div class="container">
+      <p class="eyebrow center">OUR COLLECTIONS</p>
+      <h2 class="section-title center">הקולקציות</h2>
+
+      <div class="carousel">
+        <button class="carousel__btn carousel__btn--prev" aria-label="הקודם">‹</button>
+        <div class="carousel__track">
+          <a class="slide" href="#">
+            <div class="slide__img" style="--img:url('https://picsum.photos/seed/col-1/700/900')"></div>
+            <h3>Desert Rose</h3><span>F/W 2026</span>
+          </a>
+          <a class="slide" href="#">
+            <div class="slide__img" style="--img:url('https://picsum.photos/seed/col-2/700/900')"></div>
+            <h3>Eternity</h3><span>2025</span>
+          </a>
+          <a class="slide" href="#">
+            <div class="slide__img" style="--img:url('https://picsum.photos/seed/col-3/700/900')"></div>
+            <h3>Moonlight</h3><span>2024</span>
+          </a>
+          <a class="slide" href="#">
+            <div class="slide__img" style="--img:url('https://picsum.photos/seed/col-4/700/900')"></div>
+            <h3>Bloom</h3><span>2023</span>
+          </a>
+          <a class="slide" href="#">
+            <div class="slide__img" style="--img:url('https://picsum.photos/seed/col-5/700/900')"></div>
+            <h3>Aurora</h3><span>2022</span>
+          </a>
+          <a class="slide" href="#">
+            <div class="slide__img" style="--img:url('https://picsum.photos/seed/col-6/700/900')"></div>
+            <h3>Serenity</h3><span>2021</span>
+          </a>
+        </div>
+        <button class="carousel__btn carousel__btn--next" aria-label="הבא">›</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Instagram ===== -->
+  <section class="insta">
+    <div class="container">
+      <p class="eyebrow center">@LIEL.BRIDAL</p>
+      <h2 class="section-title center">עקבו אחרי באינסטגרם</h2>
+      <div class="insta__grid">
+        <a href="#" class="insta__item" style="--img:url('https://picsum.photos/seed/ig-1/500/500')"></a>
+        <a href="#" class="insta__item" style="--img:url('https://picsum.photos/seed/ig-2/500/500')"></a>
+        <a href="#" class="insta__item" style="--img:url('https://picsum.photos/seed/ig-3/500/500')"></a>
+        <a href="#" class="insta__item" style="--img:url('https://picsum.photos/seed/ig-4/500/500')"></a>
+        <a href="#" class="insta__item" style="--img:url('https://picsum.photos/seed/ig-5/500/500')"></a>
+        <a href="#" class="insta__item" style="--img:url('https://picsum.photos/seed/ig-6/500/500')"></a>
+      </div>
+      <div class="center"><a href="#" class="btn btn--dark">Follow us on Instagram</a></div>
+    </div>
+  </section>
+
+  <!-- ===== My Brides gallery ===== -->
+  <section class="brides" id="brides">
+    <div class="container">
+      <p class="eyebrow center">MY BRIDES</p>
+      <h2 class="section-title center">הכלות שלי</h2>
+      <div class="brides__grid">
+        <div class="brides__item" style="--img:url('https://picsum.photos/seed/bride-1/600/800')"></div>
+        <div class="brides__item" style="--img:url('https://picsum.photos/seed/bride-2/600/800')"></div>
+        <div class="brides__item" style="--img:url('https://picsum.photos/seed/bride-3/600/800')"></div>
+        <div class="brides__item" style="--img:url('https://picsum.photos/seed/bride-4/600/800')"></div>
+        <div class="brides__item" style="--img:url('https://picsum.photos/seed/bride-5/600/800')"></div>
+        <div class="brides__item" style="--img:url('https://picsum.photos/seed/bride-6/600/800')"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Contact ===== -->
+  <section class="contact" id="contact">
+    <div class="container contact__inner">
+      <div class="contact__text">
+        <p class="eyebrow">CONTACT</p>
+        <h2 class="section-title">בואי נדבר</h2>
+        <p>מלאי את הפרטים ואחזור אלייך לתיאום פגישת ייעוץ ומדידה באטלייה.</p>
+        <ul class="contact__details" id="stores">
+          <li><strong>כתובת:</strong> רחוב האומנים 5, מודיעין</li>
+          <li><strong>טלפון:</strong> <a href="tel:0526069820">052-6069820</a></li>
+          <li><strong>אימייל:</strong> <a href="mailto:hello@lielbridal.com">hello@lielbridal.com</a></li>
+        </ul>
+      </div>
+      <form class="contact__form" onsubmit="return false;">
+        <input type="text" placeholder="שם מלא" required />
+        <input type="tel" placeholder="טלפון" required />
+        <input type="email" placeholder="אימייל" />
+        <textarea rows="4" placeholder="הודעה"></textarea>
+        <button type="submit" class="btn btn--dark">שליחה</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <span class="logo__main">LIEL</span>
+        <span class="logo__sub">BRIDAL DESIGN</span>
+      </div>
+      <div class="footer__col">
+        <h4>ניווט</h4>
+        <a href="#about">אודות</a>
+        <a href="#collections">קולקציות</a>
+        <a href="#brides">הכלות שלי</a>
+        <a href="#contact">צור קשר</a>
+      </div>
+      <div class="footer__col">
+        <h4>פרטים</h4>
+        <p>רחוב האומנים 5, מודיעין</p>
+        <p><a href="tel:0526069820">052-6069820</a></p>
+        <p><a href="mailto:hello@lielbridal.com">hello@lielbridal.com</a></p>
+      </div>
+      <div class="footer__col">
+        <h4>עקבו אחרי</h4>
+        <div class="footer__social">
+          <a href="#" aria-label="Instagram">Instagram</a>
+          <a href="#" aria-label="Facebook">Facebook</a>
+          <a href="#" aria-label="TikTok">TikTok</a>
+          <a href="#" aria-label="Pinterest">Pinterest</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <div class="container">© 2026 LIEL Bridal Design · כל הזכויות שמורות</div>
+    </div>
+  </footer>
+
+  <!-- ===== Floating buttons ===== -->
+  <div class="floating">
+    <a href="https://wa.me/972526069820" class="floating__btn floating__btn--wa" aria-label="WhatsApp" target="_blank" rel="noopener">WA</a>
+    <a href="tel:0526069820" class="floating__btn floating__btn--tel" aria-label="Phone">☎</a>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
