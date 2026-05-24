@@ -62,6 +62,7 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 				'label'   => __( 'Background Image', 'liel-bridal' ),
 				'type'    => Controls_Manager::MEDIA,
 				'default' => array( 'url' => Utils::get_placeholder_image_src() ),
+				'dynamic' => array( 'active' => true ), // ACF: Image field.
 			)
 		);
 
@@ -72,6 +73,7 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 				'type'        => Controls_Manager::TEXT,
 				'default'     => 'Desert Rose F/W 2026',
 				'label_block' => true,
+				'dynamic'     => array( 'active' => true ), // ACF: Text field.
 			)
 		);
 
@@ -81,6 +83,7 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 				'label'   => __( 'Button Text', 'liel-bridal' ),
 				'type'    => Controls_Manager::TEXT,
 				'default' => 'SEE MORE',
+				'dynamic' => array( 'active' => true ), // ACF: Text field.
 			)
 		);
 
@@ -91,6 +94,7 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 				'type'        => Controls_Manager::URL,
 				'placeholder' => 'https://your-link.com',
 				'default'     => array( 'url' => '#' ),
+				'dynamic'     => array( 'active' => true ), // ACF: URL / Link / Page Link field.
 			)
 		);
 
@@ -225,6 +229,72 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 
 		$this->end_controls_section();
 
+		/* ======================= STYLE: CONTENT ======================== */
+		$this->start_controls_section(
+			'section_style_content',
+			array(
+				'label' => __( 'Content Box', 'liel-bridal' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			)
+		);
+
+		$this->add_responsive_control(
+			'content_h_position',
+			array(
+				'label'     => __( 'Horizontal Position', 'liel-bridal' ),
+				'type'      => Controls_Manager::CHOOSE,
+				'options'   => array(
+					'flex-start' => array( 'title' => __( 'Start', 'liel-bridal' ), 'icon' => 'eicon-h-align-left' ),
+					'center'     => array( 'title' => __( 'Center', 'liel-bridal' ), 'icon' => 'eicon-h-align-center' ),
+					'flex-end'   => array( 'title' => __( 'End', 'liel-bridal' ), 'icon' => 'eicon-h-align-right' ),
+				),
+				'default'   => 'center',
+				'selectors' => array( '{{WRAPPER}} .liel-hero__content' => 'align-items:{{VALUE}};' ),
+			)
+		);
+
+		$this->add_responsive_control(
+			'content_v_position',
+			array(
+				'label'     => __( 'Vertical Position', 'liel-bridal' ),
+				'type'      => Controls_Manager::CHOOSE,
+				'options'   => array(
+					'flex-start' => array( 'title' => __( 'Top', 'liel-bridal' ), 'icon' => 'eicon-v-align-top' ),
+					'center'     => array( 'title' => __( 'Middle', 'liel-bridal' ), 'icon' => 'eicon-v-align-middle' ),
+					'flex-end'   => array( 'title' => __( 'Bottom', 'liel-bridal' ), 'icon' => 'eicon-v-align-bottom' ),
+				),
+				'default'   => 'center',
+				'selectors' => array( '{{WRAPPER}} .liel-hero__content' => 'justify-content:{{VALUE}};' ),
+			)
+		);
+
+		$this->add_responsive_control(
+			'content_text_align',
+			array(
+				'label'     => __( 'Text Align', 'liel-bridal' ),
+				'type'      => Controls_Manager::CHOOSE,
+				'options'   => array(
+					'left'   => array( 'title' => __( 'Left', 'liel-bridal' ), 'icon' => 'eicon-text-align-left' ),
+					'center' => array( 'title' => __( 'Center', 'liel-bridal' ), 'icon' => 'eicon-text-align-center' ),
+					'right'  => array( 'title' => __( 'Right', 'liel-bridal' ), 'icon' => 'eicon-text-align-right' ),
+				),
+				'default'   => 'center',
+				'selectors' => array( '{{WRAPPER}} .liel-hero__content' => 'text-align:{{VALUE}};' ),
+			)
+		);
+
+		$this->add_responsive_control(
+			'content_padding',
+			array(
+				'label'      => __( 'Padding', 'liel-bridal' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => array( 'px', 'em', '%' ),
+				'selectors'  => array( '{{WRAPPER}} .liel-hero__content' => 'padding:{{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};' ),
+			)
+		);
+
+		$this->end_controls_section();
+
 		/* ===================== STYLE: DESCRIPTION ====================== */
 		$this->start_controls_section(
 			'section_style_desc',
@@ -291,7 +361,25 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 				'label'     => __( 'Text Color', 'liel-bridal' ),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '#ffffff',
-				'selectors' => array( '{{WRAPPER}} .liel-hero__btn' => 'color:{{VALUE}};border-color:{{VALUE}};' ),
+				'selectors' => array( '{{WRAPPER}} .liel-hero__btn' => 'color:{{VALUE}};' ),
+			)
+		);
+		$this->add_control(
+			'button_bg',
+			array(
+				'label'     => __( 'Background', 'liel-bridal' ),
+				'type'      => Controls_Manager::COLOR,
+				'default'   => 'rgba(0,0,0,0)',
+				'selectors' => array( '{{WRAPPER}} .liel-hero__btn' => 'background:{{VALUE}};' ),
+			)
+		);
+		$this->add_control(
+			'button_border_color',
+			array(
+				'label'     => __( 'Border Color', 'liel-bridal' ),
+				'type'      => Controls_Manager::COLOR,
+				'default'   => 'rgba(255,255,255,0.85)',
+				'selectors' => array( '{{WRAPPER}} .liel-hero__btn' => 'border-color:{{VALUE}};' ),
 			)
 		);
 		$this->end_controls_tab();
@@ -320,13 +408,34 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 		$this->end_controls_tabs();
 
 		$this->add_responsive_control(
+			'button_border_width',
+			array(
+				'label'      => __( 'Border Width', 'liel-bridal' ),
+				'type'       => Controls_Manager::SLIDER,
+				'range'      => array( 'px' => array( 'min' => 0, 'max' => 8 ) ),
+				'default'    => array( 'unit' => 'px', 'size' => 1 ),
+				'selectors'  => array( '{{WRAPPER}} .liel-hero__btn' => 'border-width:{{SIZE}}{{UNIT}};border-style:solid;' ),
+				'separator'  => 'before',
+			)
+		);
+
+		$this->add_responsive_control(
+			'button_border_radius',
+			array(
+				'label'      => __( 'Border Radius', 'liel-bridal' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => array( 'px', '%' ),
+				'selectors'  => array( '{{WRAPPER}} .liel-hero__btn' => 'border-radius:{{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};' ),
+			)
+		);
+
+		$this->add_responsive_control(
 			'button_padding',
 			array(
 				'label'      => __( 'Padding', 'liel-bridal' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => array( 'px', 'em' ),
 				'selectors'  => array( '{{WRAPPER}} .liel-hero__btn' => 'padding:{{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};' ),
-				'separator'  => 'before',
 			)
 		);
 
@@ -360,6 +469,69 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 				'range'     => array( 'px' => array( 'min' => 16, 'max' => 80 ) ),
 				'default'   => array( 'unit' => 'px', 'size' => 38 ),
 				'selectors' => array( '{{WRAPPER}} .liel-hero__arrow' => 'font-size:{{SIZE}}{{UNIT}};' ),
+			)
+		);
+
+		$this->add_control(
+			'arrow_hover_color',
+			array(
+				'label'     => __( 'Hover Color', 'liel-bridal' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => array( '{{WRAPPER}} .liel-hero__arrow:hover' => 'color:{{VALUE}};opacity:1;' ),
+			)
+		);
+
+		$this->end_controls_section();
+
+		/* ====================== STYLE: PAGINATION ====================== */
+		$this->start_controls_section(
+			'section_style_dots',
+			array(
+				'label'     => __( 'Pagination Dots', 'liel-bridal' ),
+				'tab'       => Controls_Manager::TAB_STYLE,
+				'condition' => array( 'dots' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
+			'dot_color',
+			array(
+				'label'     => __( 'Dot Color', 'liel-bridal' ),
+				'type'      => Controls_Manager::COLOR,
+				'default'   => '#ffffff',
+				'selectors' => array( '{{WRAPPER}} .liel-hero .swiper-pagination-bullet' => 'background:{{VALUE}};' ),
+			)
+		);
+
+		$this->add_control(
+			'dot_active_color',
+			array(
+				'label'     => __( 'Active Dot Color', 'liel-bridal' ),
+				'type'      => Controls_Manager::COLOR,
+				'default'   => '#ffffff',
+				'selectors' => array( '{{WRAPPER}} .liel-hero .swiper-pagination-bullet-active' => 'background:{{VALUE}};' ),
+			)
+		);
+
+		$this->add_responsive_control(
+			'dot_size',
+			array(
+				'label'     => __( 'Size', 'liel-bridal' ),
+				'type'      => Controls_Manager::SLIDER,
+				'range'     => array( 'px' => array( 'min' => 4, 'max' => 20 ) ),
+				'default'   => array( 'unit' => 'px', 'size' => 8 ),
+				'selectors' => array( '{{WRAPPER}} .liel-hero .swiper-pagination-bullet' => 'width:{{SIZE}}{{UNIT}};height:{{SIZE}}{{UNIT}};' ),
+			)
+		);
+
+		$this->add_responsive_control(
+			'dot_position',
+			array(
+				'label'     => __( 'Bottom Offset', 'liel-bridal' ),
+				'type'      => Controls_Manager::SLIDER,
+				'range'     => array( 'px' => array( 'min' => 0, 'max' => 120 ) ),
+				'default'   => array( 'unit' => 'px', 'size' => 18 ),
+				'selectors' => array( '{{WRAPPER}} .liel-hero .swiper-pagination' => 'bottom:{{SIZE}}{{UNIT}};' ),
 			)
 		);
 
