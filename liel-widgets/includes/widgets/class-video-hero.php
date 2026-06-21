@@ -88,6 +88,20 @@ class Liel_Video_Hero_Widget extends Widget_Base {
 		$this->add_control( 'muted',    array( 'label' => __( 'Muted',    'liel-bridal' ), 'type' => Controls_Manager::SWITCHER, 'default' => 'yes', 'return_value' => 'yes', 'description' => __( 'Required for autoplay in most browsers.', 'liel-bridal' ) ) );
 		$this->add_control( 'controls', array( 'label' => __( 'Show Controls', 'liel-bridal' ), 'type' => Controls_Manager::SWITCHER, 'default' => '', 'return_value' => 'yes' ) );
 
+		$this->add_control(
+			'video_duration',
+			array(
+				'label'       => __( 'Video Duration (sec)', 'liel-bridal' ),
+				'description' => __( 'Bulletproof loop: enter your video length in seconds. The iframe is reloaded just before the video ends so playback restarts seamlessly. Leave 0 to rely only on the provider\'s loop param.', 'liel-bridal' ),
+				'type'        => Controls_Manager::NUMBER,
+				'default'     => 0,
+				'min'         => 0,
+				'max'         => 3600,
+				'step'        => 1,
+				'condition'   => array( 'loop' => 'yes' ),
+			)
+		);
+
 		$this->end_controls_section();
 
 		/* ============================ LOGO =============================== */
@@ -195,6 +209,7 @@ class Liel_Video_Hero_Widget extends Widget_Base {
 		$loop     = ( 'yes' === $settings['loop'] );
 		$muted    = ( 'yes' === $settings['muted'] );
 		$controls = ( 'yes' === $settings['controls'] );
+		$duration = isset( $settings['video_duration'] ) ? max( 0, absint( $settings['video_duration'] ) ) : 0;
 		$embed    = $video_url ? $this->build_embed_url( $video_url, $autoplay, $loop, $muted, $controls ) : null;
 
 		$wrap_classes = 'liel-video-hero';
@@ -213,6 +228,8 @@ class Liel_Video_Hero_Widget extends Widget_Base {
 				<?php if ( $embed ) : ?>
 					<iframe class="liel-video-hero__video liel-video-hero__video--iframe"
 						src="<?php echo esc_url( $embed ); ?>"
+						data-loop="<?php echo $loop ? '1' : '0'; ?>"
+						data-duration="<?php echo esc_attr( $duration ); ?>"
 						frameborder="0"
 						allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
 						allowfullscreen
