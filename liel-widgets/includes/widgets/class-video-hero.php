@@ -196,8 +196,13 @@ class Liel_Video_Hero_Widget extends Widget_Base {
 		$muted    = ( 'yes' === $settings['muted'] );
 		$controls = ( 'yes' === $settings['controls'] );
 		$embed    = $video_url ? $this->build_embed_url( $video_url, $autoplay, $loop, $muted, $controls ) : null;
+
+		$wrap_classes = 'liel-video-hero';
+		if ( ! $controls ) {
+			$wrap_classes .= ' liel-video-hero--no-controls';
+		}
 		?>
-		<div class="liel-video-hero">
+		<div class="<?php echo esc_attr( $wrap_classes ); ?>">
 
 			<?php if ( $image_url ) : ?>
 				<div class="liel-video-hero__bg" role="img"

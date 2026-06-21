@@ -32,6 +32,13 @@
   pointer-events:auto;
 }
 
+/* When the Controls switch is off, block pointer events so the provider's
+   hover-revealed controls (BunnyCDN especially) can't appear. */
+.liel-video-hero--no-controls .liel-video-hero__video,
+.liel-video-hero--no-controls .liel-video-hero__video--iframe{
+  pointer-events:none;
+}
+
 /* Optional overlay above the video */
 .liel-video-hero__overlay{
   position:absolute;inset:0;
