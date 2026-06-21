@@ -1,0 +1,61 @@
+/* ===========================================================
+   Liel Video Hero — handle: liel-video-hero
+   Single full-screen video hero with poster image + optional
+   centered brand logo along the bottom.
+   =========================================================== */
+
+.liel-video-hero{
+  position:relative;
+  width:100%;
+  height:var(--liel-video-hero-h,100vh);
+  overflow:hidden;
+  background:#000;
+}
+
+/* Fallback / poster image (shown while video loads or if it fails) */
+.liel-video-hero__bg{
+  position:absolute;inset:0;
+  background-size:cover;
+  background-position:center;
+  z-index:0;
+}
+
+/* Video — fills the hero, sits above the poster */
+.liel-video-hero__video{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  border:0;
+  z-index:1;
+}
+.liel-video-hero__video--iframe{
+  pointer-events:auto;
+}
+
+/* Optional overlay above the video */
+.liel-video-hero__overlay{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,.25);
+  z-index:2;
+  pointer-events:none;
+}
+
+/* Brand logo — centered along the bottom (per the home-page brief) */
+.liel-video-hero__logo{
+  position:absolute;
+  left:50%;
+  bottom:40px;
+  transform:translateX(-50%);
+  width:200px;
+  height:auto;
+  max-width:80vw;
+  z-index:3;
+  pointer-events:none;
+}
+
+@media (max-width:767px){
+  .liel-video-hero__logo{
+    width:140px;
+    bottom:24px;
+  }
+}

@@ -28,6 +28,7 @@ final class Liel_Plugin {
 	 */
 	private $widgets = array(
 		'hero-slider' => 'Liel_Hero_Slider_Widget',
+		'video-hero'  => 'Liel_Video_Hero_Widget',
 	);
 
 	private static $instance = null;
@@ -151,6 +152,15 @@ final class Liel_Plugin {
 			'liel-hero-slider',
 			LIEL_BRIDAL_URL . 'assets/js/hero-slider.js',
 			array( 'jquery', 'swiper-bundle' ),
+			LIEL_BRIDAL_VERSION,
+			true
+		);
+
+		// Video hero (single video, no carousel).
+		wp_register_script(
+			'liel-video-hero',
+			LIEL_BRIDAL_URL . 'assets/js/video-hero.js',
+			array(),
 			LIEL_BRIDAL_VERSION,
 			true
 		);
