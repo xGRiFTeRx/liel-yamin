@@ -21,16 +21,20 @@ if ( -not (Test-Path $mainFile) ) {
     throw "Main plugin file not found: $mainFile"
 }
 
-# --- Read Version: from the plugin header ------------------------------------
-$header = Get-Content $mainFile -Raw
-if ( $header -notmatch '(?m)^\s*\*\s*Version:\s*([0-9]+\.[0-9]+\.[0-9]+(?:[\.-][A-Za-z0-9]+)?)' ) {
+# --- Read Version: from the plugin header (Espresso/Thinkerbell pattern) -----
+$version = $null
+foreach ( $line in (Get-Content $mainFile) ) {
+    $t = $line.Trim()
+    if ( $t -match '^Version:\s*(.+)$' ) { $version = $Matches[1].Trim(); break }
+}
+if ( -not $version ) {
     throw "Could not find a Version: header in $mainFile"
 }
-$version = $Matches[1]
 Write-Host "Plugin version: $version"
 
 # --- Verify the Version constant matches -------------------------------------
-if ( $header -notmatch "LIEL_BRIDAL_VERSION'\s*,\s*'($([regex]::Escape($version)))'" ) {
+$headerRaw = Get-Content $mainFile -Raw
+if ( $headerRaw -notmatch "LIEL_BRIDAL_VERSION'\s*,\s*'($([regex]::Escape($version)))'" ) {
     Write-Warning "LIEL_BRIDAL_VERSION constant does not match the Version: header ($version). Bump them together."
 }
 
