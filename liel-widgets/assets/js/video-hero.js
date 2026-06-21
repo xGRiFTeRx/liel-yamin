@@ -1,64 +1,70 @@
 /* ===========================================================
    Liel Video Hero — handle: liel-video-hero
-   Single-video hero. No carousel/Swiper required.
+   Single-video hero. No carousel / Swiper required.
 
-   Loop strategy for iframe videos (BunnyCDN especially):
-     PRIMARY (deterministic):
-       If the widget's Video Duration > 0, schedule a setInterval that
-       reloads the iframe src every (duration - 1) seconds. The video
-       restarts via the autoplay=true URL param. This is the bulletproof
-       path — it works regardless of whether the provider honors loop=true.
+   End-of-video handling per the widget's `End Behavior` control:
+     - 'fallback' (DEFAULT): when the video duration elapses, add
+       .liel-video-hero--ended on the wrapper. The CSS fades the
+       iframe out so the poster image underneath is shown.
+     - 'reload': just before the video ends, force-reload the iframe
+       src with a cache-buster query param so it restarts. This is a
+       best-effort loop fallback for providers (BunnyCDN) whose
+       loop=true URL param is unreliable.
+     - 'none': do nothing — rely entirely on the provider's loop.
 
-     FALLBACK (best-effort, used when duration = 0):
-       - Listen for any "ended"-style postMessage and reload iframe src.
-       - Periodically poke the iframe with "play" commands in several
-         formats (BunnyCDN/Vimeo/YouTube accept different shapes).
-       - Heartbeat: if no message from a player for 2 min, reload.
+   Requires data-duration > 0 on the iframe (set via widget control).
    =========================================================== */
 ( function () {
   'use strict';
 
-  var IFRAME_SEL  = '.liel-video-hero__video--iframe';
-  var POKE_MS     = 30000;   // 30s — re-send "play" command (fallback path)
-  var STALL_MS    = 120000;  // 2 min — reload iframe if no signal (fallback path)
+  var IFRAME_SEL = '.liel-video-hero__video--iframe';
 
-  var lastSignal = new WeakMap();
-  var scheduled  = new WeakMap(); // marks iframes that already have a precise-timer
-
-  function reloadIframe( iframe ) {
-    var src = iframe.src;
-    iframe.src = 'about:blank';
-    setTimeout( function () { iframe.src = src; }, 50 );
+  function reloadIframeCacheBust( iframe ) {
+    var src = iframe.getAttribute( 'src' ) || '';
+    if ( ! src || src === 'about:blank' ) { return; }
+    var sep = src.indexOf( '?' ) >= 0 ? '&' : '?';
+    // Strip a prior _t param so they don't pile up
+    var clean = src.replace( /([?&])_t=\d+(&|$)/, function ( _m, pre, post ) {
+      return post === '&' ? pre : '';
+    } ).replace( /[?&]$/, '' );
+    var newSrc = clean + ( clean.indexOf( '?' ) >= 0 ? '&' : '?' ) + '_t=' + Date.now();
+    iframe.setAttribute( 'src', newSrc );
   }
 
-  function sendPlay( iframe ) {
-    if ( ! iframe.contentWindow ) { return; }
-    var formats = [
-      { event:   'play' },
-      { command: 'play' },
-      { action:  'play' },
-      { method:  'play' },
-      'play'
-    ];
-    formats.forEach( function ( msg ) {
-      try { iframe.contentWindow.postMessage( msg, '*' ); } catch ( e ) {}
-    } );
-  }
+  function scheduleEndBehavior( iframe ) {
+    if ( iframe.dataset.lielScheduled === '1' ) { return; }
+    iframe.dataset.lielScheduled = '1';
 
-  // --- PRIMARY: deterministic reload from data-duration ---
-  function schedulePreciseLoop( iframe ) {
-    if ( scheduled.get( iframe ) ) { return; }
-    var loop     = iframe.getAttribute( 'data-loop' ) === '1';
     var duration = parseInt( iframe.getAttribute( 'data-duration' ), 10 ) || 0;
-    if ( ! loop || duration < 2 ) { return; }
-    var lead = duration > 4 ? 1 : 0; // reload 1s early so the cut is hidden by autoplay
-    var interval = ( duration - lead ) * 1000;
-    setInterval( function () { reloadIframe( iframe ); }, interval );
-    scheduled.set( iframe, true );
+    var behavior = iframe.getAttribute( 'data-end-behavior' ) || 'fallback';
+    if ( duration < 2 || behavior === 'none' ) { return; }
+
+    var wrap = iframe.closest( '.liel-video-hero' );
+    if ( ! wrap ) { return; }
+
+    if ( behavior === 'fallback' ) {
+      // Fade iframe out at the end -> poster image shows.
+      setTimeout( function () {
+        wrap.classList.add( 'liel-video-hero--ended' );
+      }, duration * 1000 );
+      return;
+    }
+
+    if ( behavior === 'reload' ) {
+      // Briefly fade ~0.5s before the end, reload (cache-bust), fade back in.
+      var lead = duration > 4 ? 1 : 0;
+      setInterval( function () {
+        wrap.classList.add( 'liel-video-hero--ended' );
+        reloadIframeCacheBust( iframe );
+        setTimeout( function () {
+          wrap.classList.remove( 'liel-video-hero--ended' );
+        }, 1500 );
+      }, ( duration - lead ) * 1000 );
+    }
   }
 
   function scanAndSchedule() {
-    document.querySelectorAll( IFRAME_SEL ).forEach( schedulePreciseLoop );
+    document.querySelectorAll( IFRAME_SEL ).forEach( scheduleEndBehavior );
   }
 
   if ( document.readyState === 'loading' ) {
@@ -66,45 +72,7 @@
   } else {
     scanAndSchedule();
   }
-  // Re-scan after Elementor editor re-renders or late-mounted widgets
+  // Re-scan for late-mounted widgets (Elementor editor re-renders, etc.)
   window.setTimeout( scanAndSchedule, 1000 );
   window.setTimeout( scanAndSchedule, 3000 );
-
-  // --- FALLBACK: listen for any message from our iframes, detect end/stall ---
-  window.addEventListener( 'message', function ( ev ) {
-    document.querySelectorAll( IFRAME_SEL ).forEach( function ( iframe ) {
-      if ( iframe.contentWindow !== ev.source ) { return; }
-
-      lastSignal.set( iframe, Date.now() );
-
-      // Skip end-detection if precise timer is in charge
-      if ( scheduled.get( iframe ) ) { return; }
-
-      var data = ev.data;
-      var name = '';
-      if ( typeof data === 'string' ) {
-        name = data;
-      } else if ( data && typeof data === 'object' ) {
-        name = ( data.event || data.type || data.name || data.action || '' ).toString();
-      }
-      name = name.toLowerCase();
-      if ( name === 'ended' || name === 'end' || name === 'finished' || name === 'video:ended' || name === 'complete' ) {
-        reloadIframe( iframe );
-      }
-    } );
-  } );
-
-  // --- FALLBACK: periodic poke + heartbeat sweep (only for iframes without precise timer) ---
-  setInterval( function () {
-    var now = Date.now();
-    document.querySelectorAll( IFRAME_SEL ).forEach( function ( iframe ) {
-      if ( scheduled.get( iframe ) ) { return; }
-      sendPlay( iframe );
-      var last = lastSignal.get( iframe );
-      if ( last && ( now - last ) > STALL_MS ) {
-        lastSignal.set( iframe, now );
-        reloadIframe( iframe );
-      }
-    } );
-  }, POKE_MS );
 }() );

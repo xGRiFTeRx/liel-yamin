@@ -27,6 +27,8 @@
   object-fit:cover;
   border:0;
   z-index:1;
+  opacity:1;
+  transition:opacity .6s ease;
 }
 .liel-video-hero__video--iframe{
   pointer-events:auto;
@@ -36,6 +38,14 @@
    hover-revealed controls (BunnyCDN especially) can't appear. */
 .liel-video-hero--no-controls .liel-video-hero__video,
 .liel-video-hero--no-controls .liel-video-hero__video--iframe{
+  pointer-events:none;
+}
+
+/* Video ended (End Behavior = fallback): fade out the iframe so the
+   poster image underneath becomes visible. */
+.liel-video-hero--ended .liel-video-hero__video,
+.liel-video-hero--ended .liel-video-hero__video--iframe{
+  opacity:0;
   pointer-events:none;
 }
 

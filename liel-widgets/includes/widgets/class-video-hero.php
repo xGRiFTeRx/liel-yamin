@@ -92,13 +92,27 @@ class Liel_Video_Hero_Widget extends Widget_Base {
 			'video_duration',
 			array(
 				'label'       => __( 'Video Duration (sec)', 'liel-bridal' ),
-				'description' => __( 'Bulletproof loop: enter your video length in seconds. The iframe is reloaded just before the video ends so playback restarts seamlessly. Leave 0 to rely only on the provider\'s loop param.', 'liel-bridal' ),
+				'description' => __( 'Enter your video length in seconds so we know when it ends. Required for both loop attempts and end-of-video fallback.', 'liel-bridal' ),
 				'type'        => Controls_Manager::NUMBER,
 				'default'     => 0,
 				'min'         => 0,
 				'max'         => 3600,
 				'step'        => 1,
-				'condition'   => array( 'loop' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
+			'end_behavior',
+			array(
+				'label'       => __( 'End Behavior', 'liel-bridal' ),
+				'description' => __( 'What to show after the video plays once.', 'liel-bridal' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'fallback',
+				'options'     => array(
+					'fallback' => __( 'Show fallback image (reliable)', 'liel-bridal' ),
+					'reload'   => __( 'Reload iframe to loop (best-effort)', 'liel-bridal' ),
+					'none'     => __( 'Do nothing (rely on provider loop)', 'liel-bridal' ),
+				),
 			)
 		);
 
@@ -205,12 +219,13 @@ class Liel_Video_Hero_Widget extends Widget_Base {
 		$image_url = ! empty( $settings['fallback_image']['url'] ) ? $settings['fallback_image']['url'] : '';
 		$logo_url  = ! empty( $settings['logo_image']['url'] ) ? $settings['logo_image']['url'] : '';
 
-		$autoplay = ( 'yes' === $settings['autoplay'] );
-		$loop     = ( 'yes' === $settings['loop'] );
-		$muted    = ( 'yes' === $settings['muted'] );
-		$controls = ( 'yes' === $settings['controls'] );
-		$duration = isset( $settings['video_duration'] ) ? max( 0, absint( $settings['video_duration'] ) ) : 0;
-		$embed    = $video_url ? $this->build_embed_url( $video_url, $autoplay, $loop, $muted, $controls ) : null;
+		$autoplay     = ( 'yes' === $settings['autoplay'] );
+		$loop         = ( 'yes' === $settings['loop'] );
+		$muted        = ( 'yes' === $settings['muted'] );
+		$controls     = ( 'yes' === $settings['controls'] );
+		$duration     = isset( $settings['video_duration'] ) ? max( 0, absint( $settings['video_duration'] ) ) : 0;
+		$end_behavior = isset( $settings['end_behavior'] ) ? $settings['end_behavior'] : 'fallback';
+		$embed        = $video_url ? $this->build_embed_url( $video_url, $autoplay, $loop, $muted, $controls ) : null;
 
 		$wrap_classes = 'liel-video-hero';
 		if ( ! $controls ) {
@@ -230,6 +245,7 @@ class Liel_Video_Hero_Widget extends Widget_Base {
 						src="<?php echo esc_url( $embed ); ?>"
 						data-loop="<?php echo $loop ? '1' : '0'; ?>"
 						data-duration="<?php echo esc_attr( $duration ); ?>"
+						data-end-behavior="<?php echo esc_attr( $end_behavior ); ?>"
 						frameborder="0"
 						allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
 						allowfullscreen
