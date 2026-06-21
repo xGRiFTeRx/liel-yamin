@@ -1,8 +1,8 @@
 # ============================================================
 # Liel Bridal Widgets — release zip builder
 #
-# Reads the Version: header from liel-bridal-widgets/liel-bridal-widgets.php,
-# packages the plugin folder into dist/liel-bridal-widgets-v{version}.zip
+# Reads the Version: header from liel-widgets/liel-widgets.php,
+# packages the plugin folder into dist/liel-widgets-v{version}.zip
 # using FORWARD slashes (Windows backslashes make WP's uploader reject the
 # zip with "קובץ התוסף לא קיים"), and skips dev junk.
 #
@@ -13,8 +13,8 @@
 $ErrorActionPreference = 'Stop'
 
 $root       = Split-Path -Parent $MyInvocation.MyCommand.Path
-$pluginDir  = Join-Path $root 'liel-bridal-widgets'
-$mainFile   = Join-Path $pluginDir 'liel-bridal-widgets.php'
+$pluginDir  = Join-Path $root 'liel-widgets'
+$mainFile   = Join-Path $pluginDir 'liel-widgets.php'
 $distDir    = Join-Path $root 'dist'
 
 if ( -not (Test-Path $mainFile) ) {
@@ -40,7 +40,7 @@ if ( $headerRaw -notmatch "LIEL_BRIDAL_VERSION'\s*,\s*'($([regex]::Escape($versi
 
 # --- Prepare dist folder ------------------------------------------------------
 if ( -not (Test-Path $distDir) ) { New-Item -ItemType Directory -Path $distDir | Out-Null }
-$zipPath = Join-Path $distDir "liel-bridal-widgets-v$version.zip"
+$zipPath = Join-Path $distDir "liel-widgets-v$version.zip"
 if ( Test-Path $zipPath ) { Remove-Item $zipPath -Force }
 
 # --- Files to exclude ---------------------------------------------------------
@@ -58,7 +58,7 @@ try {
     $files = Get-ChildItem -Path $pluginDir -Recurse -File
     foreach ( $file in $files ) {
         $rel = $file.FullName.Substring( $pluginDir.Length ).TrimStart('\','/') -replace '\\','/'
-        $entryName = "liel-bridal-widgets/$rel"
+        $entryName = "liel-widgets/$rel"
 
         # Skip dev junk
         $skip = $false
