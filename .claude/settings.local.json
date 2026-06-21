@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:he.inbarfreiman.com)"
+      "WebFetch(domain:he.inbarfreiman.com)",
+      "Bash(git remote *)"
     ]
   }
 }

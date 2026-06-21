@@ -1,9 +1,11 @@
 <?php
 /**
- * Liel Hero Slider — full-screen Swiper carousel with description + button,
- * Ken Burns zoom, navigation arrows and pagination dots.
+ * Liel Hero Slider — full-screen Swiper carousel with mixed image + video slides,
+ * description + button, Ken Burns zoom, navigation arrows and pagination dots.
  *
- * Mirrors the site's Elementor "Slides" hero section.
+ * Each slide is either an image OR a video. Video supports BunnyCDN player URLs,
+ * YouTube, Vimeo (rendered as <iframe>), or direct file URLs (rendered as <video>).
+ * The per-slide image field doubles as the fallback/poster while the video loads.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -57,12 +59,85 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 		$repeater = new Repeater();
 
 		$repeater->add_control(
+			'slide_type',
+			array(
+				'label'   => __( 'Slide Type', 'liel-bridal' ),
+				'type'    => Controls_Manager::SELECT,
+				'default' => 'image',
+				'options' => array(
+					'image' => __( 'Image', 'liel-bridal' ),
+					'video' => __( 'Video', 'liel-bridal' ),
+				),
+			)
+		);
+
+		$repeater->add_control(
 			'image',
 			array(
-				'label'   => __( 'Background Image', 'liel-bridal' ),
-				'type'    => Controls_Manager::MEDIA,
-				'default' => array( 'url' => Utils::get_placeholder_image_src() ),
-				'dynamic' => array( 'active' => true ), // ACF: Image field.
+				'label'       => __( 'Image / Video Fallback', 'liel-bridal' ),
+				'description' => __( 'Background image for Image slides, or fallback/poster for Video slides.', 'liel-bridal' ),
+				'type'        => Controls_Manager::MEDIA,
+				'default'     => array( 'url' => Utils::get_placeholder_image_src() ),
+				'dynamic'     => array( 'active' => true ), // ACF: Image field.
+			)
+		);
+
+		$repeater->add_control(
+			'video_url',
+			array(
+				'label'       => __( 'Video URL', 'liel-bridal' ),
+				'description' => __( 'Paste a BunnyCDN player URL, YouTube/Vimeo URL, or a direct .mp4/.webm file URL.', 'liel-bridal' ),
+				'type'        => Controls_Manager::URL,
+				'placeholder' => 'https://player.mediadelivery.net/play/…',
+				'show_external' => false,
+				'default'     => array( 'url' => '' ),
+				'dynamic'     => array( 'active' => true ),
+				'condition'   => array( 'slide_type' => 'video' ),
+			)
+		);
+
+		$repeater->add_control(
+			'video_autoplay',
+			array(
+				'label'        => __( 'Video Autoplay', 'liel-bridal' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'default'      => 'yes',
+				'return_value' => 'yes',
+				'condition'    => array( 'slide_type' => 'video' ),
+			)
+		);
+
+		$repeater->add_control(
+			'video_loop',
+			array(
+				'label'        => __( 'Video Loop', 'liel-bridal' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'default'      => 'yes',
+				'return_value' => 'yes',
+				'condition'    => array( 'slide_type' => 'video' ),
+			)
+		);
+
+		$repeater->add_control(
+			'video_muted',
+			array(
+				'label'        => __( 'Video Muted', 'liel-bridal' ),
+				'description'  => __( 'Required for autoplay in most browsers.', 'liel-bridal' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'default'      => 'yes',
+				'return_value' => 'yes',
+				'condition'    => array( 'slide_type' => 'video' ),
+			)
+		);
+
+		$repeater->add_control(
+			'video_controls',
+			array(
+				'label'        => __( 'Show Video Controls', 'liel-bridal' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'default'      => '',
+				'return_value' => 'yes',
+				'condition'    => array( 'slide_type' => 'video' ),
 			)
 		);
 
@@ -562,13 +637,54 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 		?>
 		<div class="<?php echo esc_attr( $classes ); ?>" dir="ltr" data-liel-hero="<?php echo esc_attr( wp_json_encode( $config ) ); ?>">
 			<div class="swiper-wrapper">
-				<?php foreach ( $slides as $index => $slide ) : ?>
-					<div class="swiper-slide">
-						<div class="liel-hero__bg" role="img"
-							style="background-image:url('<?php echo esc_url( $slide['image']['url'] ); ?>');"></div>
+				<?php foreach ( $slides as $index => $slide ) :
+					$slide_type   = ! empty( $slide['slide_type'] ) ? $slide['slide_type'] : 'image';
+					$image_url    = ! empty( $slide['image']['url'] ) ? $slide['image']['url'] : '';
+					$is_video     = ( 'video' === $slide_type && ! empty( $slide['video_url']['url'] ) );
+					$slide_class  = 'swiper-slide liel-hero__slide liel-hero__slide--' . ( $is_video ? 'video' : 'image' );
+					?>
+					<div class="<?php echo esc_attr( $slide_class ); ?>">
+
+						<?php /* Always render the image as a background — it's the slide bg for images, and the poster/fallback for videos (visible before the video loads). */ ?>
+						<?php if ( $image_url ) : ?>
+							<div class="liel-hero__bg" role="img"
+								style="background-image:url('<?php echo esc_url( $image_url ); ?>');"></div>
+						<?php endif; ?>
+
+						<?php if ( $is_video ) :
+							$video_url   = $slide['video_url']['url'];
+							$autoplay    = ( 'yes' === ( $slide['video_autoplay'] ?? 'yes' ) );
+							$loop_video  = ( 'yes' === ( $slide['video_loop']     ?? 'yes' ) );
+							$muted       = ( 'yes' === ( $slide['video_muted']    ?? 'yes' ) );
+							$controls    = ( 'yes' === ( $slide['video_controls'] ?? '' ) );
+							$embed       = $this->build_embed_url( $video_url, $autoplay, $loop_video, $muted, $controls );
+							?>
+							<?php if ( $embed ) : /* iframe-based providers */ ?>
+								<iframe class="liel-hero__video liel-hero__video--iframe"
+									src="<?php echo esc_url( $embed ); ?>"
+									frameborder="0"
+									allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+									allowfullscreen
+									loading="lazy"
+									title="<?php echo esc_attr( $slide['description'] ?? 'Hero video' ); ?>"></iframe>
+							<?php else : /* direct file (.mp4 / .webm) */ ?>
+								<video class="liel-hero__video"
+									<?php echo $image_url ? 'poster="' . esc_url( $image_url ) . '"' : ''; ?>
+									<?php echo $autoplay ? 'autoplay' : ''; ?>
+									<?php echo $loop_video ? 'loop' : ''; ?>
+									<?php echo $muted ? 'muted' : ''; ?>
+									<?php echo $controls ? 'controls' : ''; ?>
+									playsinline
+									preload="metadata">
+									<source src="<?php echo esc_url( $video_url ); ?>" />
+								</video>
+							<?php endif; ?>
+						<?php endif; ?>
+
 						<?php if ( 'yes' === $settings['overlay'] ) : ?>
 							<div class="liel-hero__overlay"></div>
 						<?php endif; ?>
+
 						<div class="liel-hero__content">
 							<?php if ( ! empty( $slide['description'] ) ) : ?>
 								<div class="liel-hero__desc"><?php echo esc_html( $slide['description'] ); ?></div>
@@ -598,5 +714,70 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 			<?php endif; ?>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Convert a supported provider URL into an embeddable iframe URL with the
+	 * autoplay / loop / muted / controls flags applied.
+	 *
+	 * @return string|null The embed URL, or null if the URL is a direct media
+	 *                     file that should be rendered with <video> instead.
+	 */
+	private function build_embed_url( $url, $autoplay = true, $loop = true, $muted = true, $controls = false ) {
+		if ( empty( $url ) ) {
+			return null;
+		}
+
+		// BunnyCDN Stream — accepts player.mediadelivery.net/play/X/Y
+		// or iframe.mediadelivery.net/embed/X/Y, returns the iframe embed form.
+		if ( preg_match( '#mediadelivery\.net/(?:play|embed)/([^/]+)/([^/?#]+)#i', $url, $m ) ) {
+			$params = http_build_query( array(
+				'autoplay'   => $autoplay ? 'true' : 'false',
+				'loop'       => $loop ? 'true' : 'false',
+				'muted'      => $muted ? 'true' : 'false',
+				'preload'    => 'true',
+				'responsive' => 'true',
+				'controls'   => $controls ? 'true' : 'false',
+			) );
+			return sprintf( 'https://iframe.mediadelivery.net/embed/%s/%s?%s', $m[1], $m[2], $params );
+		}
+
+		// YouTube — youtube.com/watch?v=ID, youtu.be/ID, youtube.com/embed/ID.
+		if ( preg_match( '#(?:youtube\.com/(?:watch\?v=|embed/)|youtu\.be/)([A-Za-z0-9_-]{6,})#i', $url, $m ) ) {
+			$id     = $m[1];
+			$params = http_build_query( array_filter( array(
+				'autoplay'       => $autoplay ? 1 : 0,
+				'mute'           => $muted ? 1 : 0,
+				'loop'           => $loop ? 1 : 0,
+				'playlist'       => $loop ? $id : null, // loop requires playlist for single video.
+				'controls'       => $controls ? 1 : 0,
+				'modestbranding' => 1,
+				'rel'            => 0,
+				'playsinline'    => 1,
+			), function( $v ) { return $v !== null; } ) );
+			return sprintf( 'https://www.youtube.com/embed/%s?%s', $id, $params );
+		}
+
+		// Vimeo — vimeo.com/ID or player.vimeo.com/video/ID.
+		if ( preg_match( '#vimeo\.com/(?:video/)?(\d+)#i', $url, $m ) ) {
+			$params = http_build_query( array(
+				'autoplay'   => $autoplay ? 1 : 0,
+				'loop'       => $loop ? 1 : 0,
+				'muted'      => $muted ? 1 : 0,
+				'controls'   => $controls ? 1 : 0,
+				'playsinline'=> 1,
+				'background' => ( $autoplay && $loop && $muted && ! $controls ) ? 1 : 0,
+			) );
+			return sprintf( 'https://player.vimeo.com/video/%s?%s', $m[1], $params );
+		}
+
+		// Direct file (.mp4 / .webm / .ogg / .mov / .m4v) — null tells the
+		// renderer to use the <video> element instead of an iframe.
+		if ( preg_match( '#\.(mp4|webm|ogg|ogv|mov|m4v)(?:\?|$)#i', $url ) ) {
+			return null;
+		}
+
+		// Unknown provider — assume iframe-embeddable, return as-is.
+		return $url;
 	}
 }

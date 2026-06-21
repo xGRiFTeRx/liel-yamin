@@ -36,11 +36,30 @@
   background-position:center;
   will-change:transform;
 }
+
+/* Video slide — both <video> and <iframe> fill the slide and sit above the
+   bg-image (which serves as the poster/fallback while the video loads). */
+.liel-hero__video{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  border:0;
+  z-index:1;
+  background:#000;
+}
+.liel-hero__video--iframe{
+  /* iframes ignore object-fit; rely on width/height + provider's responsive embed */
+  pointer-events:auto;
+}
+
 .liel-hero__overlay{
   position:absolute;inset:0;
   background:rgba(0,0,0,.25);
   z-index:1;
 }
+/* Overlay needs to sit above the video, not under it */
+.liel-hero__slide--video .liel-hero__overlay{ z-index:2; }
+.liel-hero__slide--video .liel-hero__content{ z-index:3; }
 .liel-hero__content{
   position:absolute;inset:0;z-index:2;
   display:flex;flex-direction:column;
