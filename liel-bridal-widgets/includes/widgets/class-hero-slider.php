@@ -6,6 +6,11 @@
  * Each slide is either an image OR a video. Video supports BunnyCDN player URLs,
  * YouTube, Vimeo (rendered as <iframe>), or direct file URLs (rendered as <video>).
  * The per-slide image field doubles as the fallback/poster while the video loads.
+ *
+ * Slug:    hero-slider
+ * get_name() → liel-hero-slider
+ * CSS:     assets/css/widgets/hero-slider.css  (auto-registered, handle liel-hero-slider)
+ * JS:      assets/js/hero-slider.js            (manually registered in Liel_Plugin)
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -21,7 +26,7 @@ use Elementor\Group_Control_Typography;
 class Liel_Hero_Slider_Widget extends Widget_Base {
 
 	public function get_name() {
-		return 'liel_hero_slider';
+		return 'liel-hero-slider';
 	}
 
 	public function get_title() {
@@ -33,19 +38,19 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 	}
 
 	public function get_categories() {
-		return array( 'liel' );
+		return array( Liel_Plugin::CATEGORY_SLUG );
 	}
 
 	public function get_keywords() {
-		return array( 'liel', 'hero', 'slider', 'slides', 'bridal', 'swiper' );
+		return array( 'liel', 'hero', 'slider', 'slides', 'video', 'bridal', 'swiper' );
 	}
 
 	public function get_script_depends() {
-		return array( 'swiper-bundle', 'liel-bw' );
+		return array( 'swiper-bundle', 'liel-hero-slider' );
 	}
 
 	public function get_style_depends() {
-		return array( 'swiper-bundle', 'liel-bw' );
+		return array( 'swiper-bundle', 'liel-hero-slider' );
 	}
 
 	protected function register_controls() {
@@ -78,21 +83,21 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 				'description' => __( 'Background image for Image slides, or fallback/poster for Video slides.', 'liel-bridal' ),
 				'type'        => Controls_Manager::MEDIA,
 				'default'     => array( 'url' => Utils::get_placeholder_image_src() ),
-				'dynamic'     => array( 'active' => true ), // ACF: Image field.
+				'dynamic'     => array( 'active' => true ),
 			)
 		);
 
 		$repeater->add_control(
 			'video_url',
 			array(
-				'label'       => __( 'Video URL', 'liel-bridal' ),
-				'description' => __( 'Paste a BunnyCDN player URL, YouTube/Vimeo URL, or a direct .mp4/.webm file URL.', 'liel-bridal' ),
-				'type'        => Controls_Manager::URL,
-				'placeholder' => 'https://player.mediadelivery.net/play/…',
+				'label'         => __( 'Video URL', 'liel-bridal' ),
+				'description'   => __( 'Paste a BunnyCDN player URL, YouTube/Vimeo URL, or a direct .mp4/.webm file URL.', 'liel-bridal' ),
+				'type'          => Controls_Manager::URL,
+				'placeholder'   => 'https://player.mediadelivery.net/play/…',
 				'show_external' => false,
-				'default'     => array( 'url' => '' ),
-				'dynamic'     => array( 'active' => true ),
-				'condition'   => array( 'slide_type' => 'video' ),
+				'default'       => array( 'url' => '' ),
+				'dynamic'       => array( 'active' => true ),
+				'condition'     => array( 'slide_type' => 'video' ),
 			)
 		);
 
@@ -146,9 +151,9 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 			array(
 				'label'       => __( 'Description', 'liel-bridal' ),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => 'Desert Rose F/W 2026',
+				'default'     => '',
 				'label_block' => true,
-				'dynamic'     => array( 'active' => true ), // ACF: Text field.
+				'dynamic'     => array( 'active' => true ),
 			)
 		);
 
@@ -157,8 +162,8 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 			array(
 				'label'   => __( 'Button Text', 'liel-bridal' ),
 				'type'    => Controls_Manager::TEXT,
-				'default' => 'SEE MORE',
-				'dynamic' => array( 'active' => true ), // ACF: Text field.
+				'default' => '',
+				'dynamic' => array( 'active' => true ),
 			)
 		);
 
@@ -169,7 +174,7 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 				'type'        => Controls_Manager::URL,
 				'placeholder' => 'https://your-link.com',
 				'default'     => array( 'url' => '#' ),
-				'dynamic'     => array( 'active' => true ), // ACF: URL / Link / Page Link field.
+				'dynamic'     => array( 'active' => true ),
 			)
 		);
 
@@ -179,11 +184,9 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 				'label'       => __( 'Slides', 'liel-bridal' ),
 				'type'        => Controls_Manager::REPEATER,
 				'fields'      => $repeater->get_controls(),
-				'title_field' => '{{{ description }}}',
+				'title_field' => '{{{ slide_type === "video" ? "▶ " : "" }}}{{{ description || (slide_type === "video" ? "Video slide" : "Image slide") }}}',
 				'default'     => array(
-					array( 'description' => 'Desert Rose F/W 2026', 'button_text' => 'SEE MORE', 'button_link' => array( 'url' => '#' ), 'image' => array( 'url' => Utils::get_placeholder_image_src() ) ),
-					array( 'description' => 'Desert Rose F/W 2026', 'button_text' => 'SEE MORE', 'button_link' => array( 'url' => '#' ), 'image' => array( 'url' => Utils::get_placeholder_image_src() ) ),
-					array( 'description' => 'Desert Rose F/W 2026', 'button_text' => 'SEE MORE', 'button_link' => array( 'url' => '#' ), 'image' => array( 'url' => Utils::get_placeholder_image_src() ) ),
+					array( 'slide_type' => 'image', 'image' => array( 'url' => Utils::get_placeholder_image_src() ) ),
 				),
 			)
 		);
@@ -211,55 +214,11 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 			)
 		);
 
-		$this->add_control(
-			'arrows',
-			array(
-				'label'        => __( 'Navigation Arrows', 'liel-bridal' ),
-				'type'         => Controls_Manager::SWITCHER,
-				'default'      => 'yes',
-				'return_value' => 'yes',
-			)
-		);
-
-		$this->add_control(
-			'dots',
-			array(
-				'label'        => __( 'Pagination Dots', 'liel-bridal' ),
-				'type'         => Controls_Manager::SWITCHER,
-				'default'      => 'yes',
-				'return_value' => 'yes',
-			)
-		);
-
-		$this->add_control(
-			'loop',
-			array(
-				'label'        => __( 'Loop', 'liel-bridal' ),
-				'type'         => Controls_Manager::SWITCHER,
-				'default'      => 'yes',
-				'return_value' => 'yes',
-			)
-		);
-
-		$this->add_control(
-			'ken_burns',
-			array(
-				'label'        => __( 'Ken Burns Zoom', 'liel-bridal' ),
-				'type'         => Controls_Manager::SWITCHER,
-				'default'      => 'yes',
-				'return_value' => 'yes',
-			)
-		);
-
-		$this->add_control(
-			'autoplay',
-			array(
-				'label'        => __( 'Autoplay', 'liel-bridal' ),
-				'type'         => Controls_Manager::SWITCHER,
-				'default'      => 'yes',
-				'return_value' => 'yes',
-			)
-		);
+		$this->add_control( 'arrows',   array( 'label' => __( 'Navigation Arrows', 'liel-bridal' ), 'type' => Controls_Manager::SWITCHER, 'default' => 'yes', 'return_value' => 'yes' ) );
+		$this->add_control( 'dots',     array( 'label' => __( 'Pagination Dots',   'liel-bridal' ), 'type' => Controls_Manager::SWITCHER, 'default' => 'yes', 'return_value' => 'yes' ) );
+		$this->add_control( 'loop',     array( 'label' => __( 'Loop',              'liel-bridal' ), 'type' => Controls_Manager::SWITCHER, 'default' => 'yes', 'return_value' => 'yes' ) );
+		$this->add_control( 'ken_burns',array( 'label' => __( 'Ken Burns Zoom',    'liel-bridal' ), 'type' => Controls_Manager::SWITCHER, 'default' => 'yes', 'return_value' => 'yes' ) );
+		$this->add_control( 'autoplay', array( 'label' => __( 'Autoplay',          'liel-bridal' ), 'type' => Controls_Manager::SWITCHER, 'default' => 'yes', 'return_value' => 'yes' ) );
 
 		$this->add_control(
 			'autoplay_speed',
@@ -307,10 +266,7 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 		/* ======================= STYLE: CONTENT ======================== */
 		$this->start_controls_section(
 			'section_style_content',
-			array(
-				'label' => __( 'Content Box', 'liel-bridal' ),
-				'tab'   => Controls_Manager::TAB_STYLE,
-			)
+			array( 'label' => __( 'Content Box', 'liel-bridal' ), 'tab' => Controls_Manager::TAB_STYLE )
 		);
 
 		$this->add_responsive_control(
@@ -319,9 +275,9 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 				'label'     => __( 'Horizontal Position', 'liel-bridal' ),
 				'type'      => Controls_Manager::CHOOSE,
 				'options'   => array(
-					'flex-start' => array( 'title' => __( 'Start', 'liel-bridal' ), 'icon' => 'eicon-h-align-left' ),
+					'flex-start' => array( 'title' => __( 'Start',  'liel-bridal' ), 'icon' => 'eicon-h-align-left' ),
 					'center'     => array( 'title' => __( 'Center', 'liel-bridal' ), 'icon' => 'eicon-h-align-center' ),
-					'flex-end'   => array( 'title' => __( 'End', 'liel-bridal' ), 'icon' => 'eicon-h-align-right' ),
+					'flex-end'   => array( 'title' => __( 'End',    'liel-bridal' ), 'icon' => 'eicon-h-align-right' ),
 				),
 				'default'   => 'center',
 				'selectors' => array( '{{WRAPPER}} .liel-hero__content' => 'align-items:{{VALUE}};' ),
@@ -334,7 +290,7 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 				'label'     => __( 'Vertical Position', 'liel-bridal' ),
 				'type'      => Controls_Manager::CHOOSE,
 				'options'   => array(
-					'flex-start' => array( 'title' => __( 'Top', 'liel-bridal' ), 'icon' => 'eicon-v-align-top' ),
+					'flex-start' => array( 'title' => __( 'Top',    'liel-bridal' ), 'icon' => 'eicon-v-align-top' ),
 					'center'     => array( 'title' => __( 'Middle', 'liel-bridal' ), 'icon' => 'eicon-v-align-middle' ),
 					'flex-end'   => array( 'title' => __( 'Bottom', 'liel-bridal' ), 'icon' => 'eicon-v-align-bottom' ),
 				),
@@ -349,9 +305,9 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 				'label'     => __( 'Text Align', 'liel-bridal' ),
 				'type'      => Controls_Manager::CHOOSE,
 				'options'   => array(
-					'left'   => array( 'title' => __( 'Left', 'liel-bridal' ), 'icon' => 'eicon-text-align-left' ),
+					'left'   => array( 'title' => __( 'Left',   'liel-bridal' ), 'icon' => 'eicon-text-align-left' ),
 					'center' => array( 'title' => __( 'Center', 'liel-bridal' ), 'icon' => 'eicon-text-align-center' ),
-					'right'  => array( 'title' => __( 'Right', 'liel-bridal' ), 'icon' => 'eicon-text-align-right' ),
+					'right'  => array( 'title' => __( 'Right',  'liel-bridal' ), 'icon' => 'eicon-text-align-right' ),
 				),
 				'default'   => 'center',
 				'selectors' => array( '{{WRAPPER}} .liel-hero__content' => 'text-align:{{VALUE}};' ),
@@ -373,10 +329,7 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 		/* ===================== STYLE: DESCRIPTION ====================== */
 		$this->start_controls_section(
 			'section_style_desc',
-			array(
-				'label' => __( 'Description', 'liel-bridal' ),
-				'tab'   => Controls_Manager::TAB_STYLE,
-			)
+			array( 'label' => __( 'Description', 'liel-bridal' ), 'tab' => Controls_Manager::TAB_STYLE )
 		);
 
 		$this->add_control(
@@ -391,10 +344,7 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
-			array(
-				'name'     => 'desc_typography',
-				'selector' => '{{WRAPPER}} .liel-hero__desc',
-			)
+			array( 'name' => 'desc_typography', 'selector' => '{{WRAPPER}} .liel-hero__desc' )
 		);
 
 		$this->add_responsive_control(
@@ -413,71 +363,25 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 		/* ======================== STYLE: BUTTON ======================== */
 		$this->start_controls_section(
 			'section_style_button',
-			array(
-				'label' => __( 'Button', 'liel-bridal' ),
-				'tab'   => Controls_Manager::TAB_STYLE,
-			)
+			array( 'label' => __( 'Button', 'liel-bridal' ), 'tab' => Controls_Manager::TAB_STYLE )
 		);
 
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
-			array(
-				'name'     => 'button_typography',
-				'selector' => '{{WRAPPER}} .liel-hero__btn',
-			)
+			array( 'name' => 'button_typography', 'selector' => '{{WRAPPER}} .liel-hero__btn' )
 		);
 
 		$this->start_controls_tabs( 'button_tabs' );
 
 		$this->start_controls_tab( 'button_normal', array( 'label' => __( 'Normal', 'liel-bridal' ) ) );
-		$this->add_control(
-			'button_color',
-			array(
-				'label'     => __( 'Text Color', 'liel-bridal' ),
-				'type'      => Controls_Manager::COLOR,
-				'default'   => '#ffffff',
-				'selectors' => array( '{{WRAPPER}} .liel-hero__btn' => 'color:{{VALUE}};' ),
-			)
-		);
-		$this->add_control(
-			'button_bg',
-			array(
-				'label'     => __( 'Background', 'liel-bridal' ),
-				'type'      => Controls_Manager::COLOR,
-				'default'   => 'rgba(0,0,0,0)',
-				'selectors' => array( '{{WRAPPER}} .liel-hero__btn' => 'background:{{VALUE}};' ),
-			)
-		);
-		$this->add_control(
-			'button_border_color',
-			array(
-				'label'     => __( 'Border Color', 'liel-bridal' ),
-				'type'      => Controls_Manager::COLOR,
-				'default'   => 'rgba(255,255,255,0.85)',
-				'selectors' => array( '{{WRAPPER}} .liel-hero__btn' => 'border-color:{{VALUE}};' ),
-			)
-		);
+		$this->add_control( 'button_color',        array( 'label' => __( 'Text Color',  'liel-bridal' ), 'type' => Controls_Manager::COLOR, 'default' => '#ffffff',                'selectors' => array( '{{WRAPPER}} .liel-hero__btn' => 'color:{{VALUE}};' ) ) );
+		$this->add_control( 'button_bg',           array( 'label' => __( 'Background',  'liel-bridal' ), 'type' => Controls_Manager::COLOR, 'default' => 'rgba(0,0,0,0)',         'selectors' => array( '{{WRAPPER}} .liel-hero__btn' => 'background:{{VALUE}};' ) ) );
+		$this->add_control( 'button_border_color', array( 'label' => __( 'Border Color','liel-bridal' ), 'type' => Controls_Manager::COLOR, 'default' => 'rgba(255,255,255,0.85)', 'selectors' => array( '{{WRAPPER}} .liel-hero__btn' => 'border-color:{{VALUE}};' ) ) );
 		$this->end_controls_tab();
 
 		$this->start_controls_tab( 'button_hover', array( 'label' => __( 'Hover', 'liel-bridal' ) ) );
-		$this->add_control(
-			'button_hover_color',
-			array(
-				'label'     => __( 'Text Color', 'liel-bridal' ),
-				'type'      => Controls_Manager::COLOR,
-				'default'   => '#2b2926',
-				'selectors' => array( '{{WRAPPER}} .liel-hero__btn:hover' => 'color:{{VALUE}};' ),
-			)
-		);
-		$this->add_control(
-			'button_hover_bg',
-			array(
-				'label'     => __( 'Background', 'liel-bridal' ),
-				'type'      => Controls_Manager::COLOR,
-				'default'   => '#ffffff',
-				'selectors' => array( '{{WRAPPER}} .liel-hero__btn:hover' => 'background:{{VALUE}};border-color:{{VALUE}};' ),
-			)
-		);
+		$this->add_control( 'button_hover_color', array( 'label' => __( 'Text Color', 'liel-bridal' ), 'type' => Controls_Manager::COLOR, 'default' => '#2b2926', 'selectors' => array( '{{WRAPPER}} .liel-hero__btn:hover' => 'color:{{VALUE}};' ) ) );
+		$this->add_control( 'button_hover_bg',    array( 'label' => __( 'Background', 'liel-bridal' ), 'type' => Controls_Manager::COLOR, 'default' => '#ffffff', 'selectors' => array( '{{WRAPPER}} .liel-hero__btn:hover' => 'background:{{VALUE}};border-color:{{VALUE}};' ) ) );
 		$this->end_controls_tab();
 
 		$this->end_controls_tabs();
@@ -519,11 +423,7 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 		/* ======================== STYLE: ARROWS ======================== */
 		$this->start_controls_section(
 			'section_style_arrows',
-			array(
-				'label'     => __( 'Arrows', 'liel-bridal' ),
-				'tab'       => Controls_Manager::TAB_STYLE,
-				'condition' => array( 'arrows' => 'yes' ),
-			)
+			array( 'label' => __( 'Arrows', 'liel-bridal' ), 'tab' => Controls_Manager::TAB_STYLE, 'condition' => array( 'arrows' => 'yes' ) )
 		);
 
 		$this->add_control(
@@ -561,11 +461,7 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 		/* ====================== STYLE: PAGINATION ====================== */
 		$this->start_controls_section(
 			'section_style_dots',
-			array(
-				'label'     => __( 'Pagination Dots', 'liel-bridal' ),
-				'tab'       => Controls_Manager::TAB_STYLE,
-				'condition' => array( 'dots' => 'yes' ),
-			)
+			array( 'label' => __( 'Pagination Dots', 'liel-bridal' ), 'tab' => Controls_Manager::TAB_STYLE, 'condition' => array( 'dots' => 'yes' ) )
 		);
 
 		$this->add_control(
@@ -627,47 +523,48 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 		}
 
 		$config = array(
-			'loop'      => ( 'yes' === $settings['loop'] ),
-			'arrows'    => ( 'yes' === $settings['arrows'] ),
-			'dots'      => ( 'yes' === $settings['dots'] ),
-			'autoplay'  => ( 'yes' === $settings['autoplay'] ),
-			'delay'     => isset( $settings['autoplay_speed'] ) ? absint( $settings['autoplay_speed'] ) : 5000,
-			'speed'     => isset( $settings['transition_speed'] ) ? absint( $settings['transition_speed'] ) : 800,
+			'loop'     => ( 'yes' === $settings['loop'] ),
+			'arrows'   => ( 'yes' === $settings['arrows'] ),
+			'dots'     => ( 'yes' === $settings['dots'] ),
+			'autoplay' => ( 'yes' === $settings['autoplay'] ),
+			'delay'    => isset( $settings['autoplay_speed'] ) ? absint( $settings['autoplay_speed'] ) : 5000,
+			'speed'    => isset( $settings['transition_speed'] ) ? absint( $settings['transition_speed'] ) : 800,
 		);
 		?>
 		<div class="<?php echo esc_attr( $classes ); ?>" dir="ltr" data-liel-hero="<?php echo esc_attr( wp_json_encode( $config ) ); ?>">
 			<div class="swiper-wrapper">
 				<?php foreach ( $slides as $index => $slide ) :
-					$slide_type   = ! empty( $slide['slide_type'] ) ? $slide['slide_type'] : 'image';
-					$image_url    = ! empty( $slide['image']['url'] ) ? $slide['image']['url'] : '';
-					$is_video     = ( 'video' === $slide_type && ! empty( $slide['video_url']['url'] ) );
-					$slide_class  = 'swiper-slide liel-hero__slide liel-hero__slide--' . ( $is_video ? 'video' : 'image' );
+					$slide_type  = ! empty( $slide['slide_type'] ) ? $slide['slide_type'] : 'image';
+					$image_url   = ! empty( $slide['image']['url'] ) ? $slide['image']['url'] : '';
+					$is_video    = ( 'video' === $slide_type && ! empty( $slide['video_url']['url'] ) );
+					$slide_class = 'swiper-slide liel-hero__slide liel-hero__slide--' . ( $is_video ? 'video' : 'image' );
 					?>
 					<div class="<?php echo esc_attr( $slide_class ); ?>">
 
-						<?php /* Always render the image as a background — it's the slide bg for images, and the poster/fallback for videos (visible before the video loads). */ ?>
+						<?php /* Image is bg for image slides, poster/fallback for video slides */ ?>
 						<?php if ( $image_url ) : ?>
 							<div class="liel-hero__bg" role="img"
 								style="background-image:url('<?php echo esc_url( $image_url ); ?>');"></div>
 						<?php endif; ?>
 
 						<?php if ( $is_video ) :
-							$video_url   = $slide['video_url']['url'];
-							$autoplay    = ( 'yes' === ( $slide['video_autoplay'] ?? 'yes' ) );
-							$loop_video  = ( 'yes' === ( $slide['video_loop']     ?? 'yes' ) );
-							$muted       = ( 'yes' === ( $slide['video_muted']    ?? 'yes' ) );
-							$controls    = ( 'yes' === ( $slide['video_controls'] ?? '' ) );
-							$embed       = $this->build_embed_url( $video_url, $autoplay, $loop_video, $muted, $controls );
+							$video_url  = $slide['video_url']['url'];
+							$autoplay   = ( 'yes' === ( isset( $slide['video_autoplay'] ) ? $slide['video_autoplay'] : 'yes' ) );
+							$loop_video = ( 'yes' === ( isset( $slide['video_loop'] )     ? $slide['video_loop']     : 'yes' ) );
+							$muted      = ( 'yes' === ( isset( $slide['video_muted'] )    ? $slide['video_muted']    : 'yes' ) );
+							$controls   = ( 'yes' === ( isset( $slide['video_controls'] ) ? $slide['video_controls'] : '' ) );
+							$embed      = $this->build_embed_url( $video_url, $autoplay, $loop_video, $muted, $controls );
+							$alt_title  = ! empty( $slide['description'] ) ? $slide['description'] : __( 'Hero video', 'liel-bridal' );
 							?>
-							<?php if ( $embed ) : /* iframe-based providers */ ?>
+							<?php if ( $embed ) : ?>
 								<iframe class="liel-hero__video liel-hero__video--iframe"
 									src="<?php echo esc_url( $embed ); ?>"
 									frameborder="0"
 									allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
 									allowfullscreen
 									loading="lazy"
-									title="<?php echo esc_attr( $slide['description'] ?? 'Hero video' ); ?>"></iframe>
-							<?php else : /* direct file (.mp4 / .webm) */ ?>
+									title="<?php echo esc_attr( $alt_title ); ?>"></iframe>
+							<?php else : ?>
 								<video class="liel-hero__video"
 									<?php echo $image_url ? 'poster="' . esc_url( $image_url ) . '"' : ''; ?>
 									<?php echo $autoplay ? 'autoplay' : ''; ?>
@@ -689,8 +586,7 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 							<?php if ( ! empty( $slide['description'] ) ) : ?>
 								<div class="liel-hero__desc"><?php echo esc_html( $slide['description'] ); ?></div>
 							<?php endif; ?>
-							<?php if ( ! empty( $slide['button_text'] ) ) : ?>
-								<?php
+							<?php if ( ! empty( $slide['button_text'] ) ) :
 								$url    = ! empty( $slide['button_link']['url'] ) ? $slide['button_link']['url'] : '#';
 								$target = ! empty( $slide['button_link']['is_external'] ) ? ' target="_blank"' : '';
 								$rel    = ! empty( $slide['button_link']['nofollow'] ) ? ' rel="nofollow"' : '';
@@ -717,19 +613,16 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 	}
 
 	/**
-	 * Convert a supported provider URL into an embeddable iframe URL with the
-	 * autoplay / loop / muted / controls flags applied.
-	 *
-	 * @return string|null The embed URL, or null if the URL is a direct media
-	 *                     file that should be rendered with <video> instead.
+	 * Convert a supported provider URL into an iframe embed URL with the
+	 * autoplay/loop/muted/controls flags applied. Returns null for direct
+	 * media files so the renderer falls back to a <video> element.
 	 */
 	private function build_embed_url( $url, $autoplay = true, $loop = true, $muted = true, $controls = false ) {
 		if ( empty( $url ) ) {
 			return null;
 		}
 
-		// BunnyCDN Stream — accepts player.mediadelivery.net/play/X/Y
-		// or iframe.mediadelivery.net/embed/X/Y, returns the iframe embed form.
+		// BunnyCDN Stream
 		if ( preg_match( '#mediadelivery\.net/(?:play|embed)/([^/]+)/([^/?#]+)#i', $url, $m ) ) {
 			$params = http_build_query( array(
 				'autoplay'   => $autoplay ? 'true' : 'false',
@@ -742,14 +635,14 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 			return sprintf( 'https://iframe.mediadelivery.net/embed/%s/%s?%s', $m[1], $m[2], $params );
 		}
 
-		// YouTube — youtube.com/watch?v=ID, youtu.be/ID, youtube.com/embed/ID.
+		// YouTube
 		if ( preg_match( '#(?:youtube\.com/(?:watch\?v=|embed/)|youtu\.be/)([A-Za-z0-9_-]{6,})#i', $url, $m ) ) {
-			$id     = $m[1];
+			$id = $m[1];
 			$params = http_build_query( array_filter( array(
 				'autoplay'       => $autoplay ? 1 : 0,
 				'mute'           => $muted ? 1 : 0,
 				'loop'           => $loop ? 1 : 0,
-				'playlist'       => $loop ? $id : null, // loop requires playlist for single video.
+				'playlist'       => $loop ? $id : null,
 				'controls'       => $controls ? 1 : 0,
 				'modestbranding' => 1,
 				'rel'            => 0,
@@ -758,7 +651,7 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 			return sprintf( 'https://www.youtube.com/embed/%s?%s', $id, $params );
 		}
 
-		// Vimeo — vimeo.com/ID or player.vimeo.com/video/ID.
+		// Vimeo
 		if ( preg_match( '#vimeo\.com/(?:video/)?(\d+)#i', $url, $m ) ) {
 			$params = http_build_query( array(
 				'autoplay'   => $autoplay ? 1 : 0,
@@ -771,13 +664,12 @@ class Liel_Hero_Slider_Widget extends Widget_Base {
 			return sprintf( 'https://player.vimeo.com/video/%s?%s', $m[1], $params );
 		}
 
-		// Direct file (.mp4 / .webm / .ogg / .mov / .m4v) — null tells the
-		// renderer to use the <video> element instead of an iframe.
+		// Direct file (.mp4/.webm/.ogg/.mov) — use <video> instead
 		if ( preg_match( '#\.(mp4|webm|ogg|ogv|mov|m4v)(?:\?|$)#i', $url ) ) {
 			return null;
 		}
 
-		// Unknown provider — assume iframe-embeddable, return as-is.
+		// Unknown provider — assume iframe-embeddable
 		return $url;
 	}
 }

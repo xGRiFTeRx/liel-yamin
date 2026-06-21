@@ -1,26 +1,8 @@
 /* ===========================================================
-   Liel Bridal Widgets — shared styles
-   Brand tokens + per-section styles (added section by section)
+   Liel Hero Slider — handle: liel-hero-slider
+   Full-screen Swiper carousel with image OR video slides.
    =========================================================== */
 
-:root{
-  --liel-ivory:#faf7f2;
-  --liel-cream:#f1ebe2;
-  --liel-ink:#2b2926;
-  --liel-muted:#8a8074;
-  --liel-line:#e6ddd3;
-  --liel-gold:#b89b6f;
-  --liel-rose:#c9a99a;
-  --liel-serif:'Frank Ruhl Libre', serif;
-  --liel-display:'Cormorant Garamond', serif;
-  --liel-sans:'Heebo', sans-serif;
-}
-
-/* Section styles are appended below as we build each widget. */
-
-/* ===========================================================
-   Hero Slider  (widget: liel_hero_slider)
-   =========================================================== */
 .liel-hero{
   position:relative;
   width:100%;
@@ -48,7 +30,6 @@
   background:#000;
 }
 .liel-hero__video--iframe{
-  /* iframes ignore object-fit; rely on width/height + provider's responsive embed */
   pointer-events:auto;
 }
 
@@ -57,21 +38,24 @@
   background:rgba(0,0,0,.25);
   z-index:1;
 }
-/* Overlay needs to sit above the video, not under it */
-.liel-hero__slide--video .liel-hero__overlay{ z-index:2; }
-.liel-hero__slide--video .liel-hero__content{ z-index:3; }
+/* On video slides, overlay + content must sit above the video */
+.liel-hero__slide--video .liel-hero__overlay{z-index:2;}
+.liel-hero__slide--video .liel-hero__content{z-index:3;}
+
 .liel-hero__content{
   position:absolute;inset:0;z-index:2;
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
   text-align:center;color:#fff;padding:20px;
 }
+
 .liel-hero__desc{
   font-family:var(--liel-display);
   letter-spacing:.12em;
   font-size:1rem;
   margin-bottom:14px;
 }
+
 .liel-hero__btn{
   display:inline-block;
   font-family:var(--liel-display);
@@ -85,7 +69,7 @@
 }
 .liel-hero__btn:hover{background:#fff;color:var(--liel-ink);}
 
-/* arrows */
+/* Arrows */
 .liel-hero__arrow{
   position:absolute;top:50%;transform:translateY(-50%);
   z-index:5;cursor:pointer;
@@ -99,7 +83,7 @@
 .liel-hero__arrow--next{right:14px;}
 .liel-hero__arrow.swiper-button-disabled{opacity:.3;cursor:default;}
 
-/* pagination */
+/* Pagination */
 .liel-hero .swiper-pagination{
   position:absolute;bottom:18px;left:0;right:0;
   text-align:center;z-index:5;
@@ -110,8 +94,8 @@
 }
 .liel-hero .swiper-pagination-bullet-active{opacity:1;}
 
-/* Ken Burns zoom on the active slide */
-.liel-hero.is-kenburns .swiper-slide-active .liel-hero__bg{
+/* Ken Burns zoom on the active slide (skip on video slides) */
+.liel-hero.is-kenburns .swiper-slide-active:not(.liel-hero__slide--video) .liel-hero__bg{
   animation:liel-kenburns 8s ease-out forwards;
 }
 @keyframes liel-kenburns{

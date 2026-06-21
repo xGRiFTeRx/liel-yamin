@@ -1,0 +1,20 @@
+/* ===========================================================
+   Liel Bridal Widgets — shared brand tokens
+   Every per-widget stylesheet depends on this file (handle: liel-shared).
+   =========================================================== */
+
+:root{
+  /* Palette */
+  --liel-ivory : #faf7f2;
+  --liel-cream : #f1ebe2;
+  --liel-ink   : #2b2926;
+  --liel-muted : #8a8074;
+  --liel-line  : #e6ddd3;
+  --liel-gold  : #b89b6f;
+  --liel-rose  : #c9a99a;
+
+  /* Type stacks */
+  --liel-serif   : 'Frank Ruhl Libre', serif;
+  --liel-display : 'Cormorant Garamond', serif;
+  --liel-sans    : 'Heebo', sans-serif;
+}

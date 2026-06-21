@@ -1,0 +1,10 @@
+/* ===========================================================
+   Liel Bridal Widgets — editor-only tweaks
+   Enqueued via elementor/editor/after_enqueue_styles.
+   Keep this minimal: editor styling fixes only.
+   =========================================================== */
+
+/* Make the Liel category icon a touch more visible */
+.elementor-panel .elementor-element-wrapper[data-element_category="liel"] .eicon-woman{
+  color: var(--liel-gold, #b89b6f);
+}
